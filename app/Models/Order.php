@@ -42,4 +42,14 @@ class Order extends Model
     {
         return $this->belongsTo(Discount::class, 'discount_code', 'code');
     }
+    public function field()
+    {
+        return $this->belongsTo(Field::class);
+    }
+
+    // Field.php
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id'); // Misalkan setiap field memiliki 'owner_id'
+    }
 }

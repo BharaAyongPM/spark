@@ -15,9 +15,26 @@ class Field extends Model
         'user_id',
         'field_type_id',
         'name',
+        'slug',
+        'deskripsi',
+        'foto',
+        'baner',
         'location',
+        'location_id',
+        'lat',
+        'lon',
+        'galery',
+        'slot_tipe',
         'owner',
-        'grass_quality'
+        'grass_quality',
+        'no_whatsapp',
+        'custom_domain',
+        'instagram',
+        'facebook',
+        'video',
+        'batas_pembayaran',
+        'syarat_ketentuan',
+        'status',
     ];
 
     // Relasi ke model User
@@ -54,5 +71,9 @@ class Field extends Model
     public function orders()
     {
         return $this->hasManyThrough(Order::class, OrderItem::class);
+    }
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
     }
 }

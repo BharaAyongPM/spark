@@ -140,15 +140,31 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Tentukan apakah input adalah email atau phone
         $fieldType = filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
         $credentials = [$fieldType => $request->email_or_phone, 'password' => $request->password];
 
         if (Auth::attempt($credentials)) {
+            // Autentikasi berhasil
+            $user = Auth::user();
+
+            // Periksa role user
+            if ($user->roles->contains('name_roles', 'ADMIN')) {
+                return redirect()->intended('admin/dashboard');
+            } elseif ($user->roles->contains('name_roles', 'PEMILIK')) {
+                return redirect()->intended('vendor/dashboard');
+            } elseif ($user->roles->contains('name_roles', 'PENYEWA')) {
+                return redirect()->intended('user/dashboard');
+            }
+
+            // Default redirect jika tidak ada role yang sesuai
             return redirect()->intended('dashboard');
         }
 
         return back()->withErrors(['email_or_phone' => 'Credentials do not match.']);
     }
+
+
 
     public function logout(Request $request)
     {
