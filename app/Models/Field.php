@@ -76,4 +76,8 @@ class Field extends Model
     {
         return $this->belongsTo(Location::class, 'location_id');
     }
+    public function jamOperasionals()
+    {
+        return $this->hasMany(JamOperasional::class, 'field_id');
+    }
 }

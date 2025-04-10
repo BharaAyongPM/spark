@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparX Landing Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pontano+Sans&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="logo.png" alt="SparX">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Venue</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Berita</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Jelajah</a></li>
+                    <li class="nav-item d-flex align-items-center">
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item cart-icon" onclick="toggleCart()">
+                                    <i class="fas fa-shopping-cart fa-lg"></i>
+                                    <span class="cart-badge">2</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item ms-3"><a class="btn btn-daftar" data-bs-toggle="modal" data-bs-target="#DaftarModal">Daftar</a></li>
+                    <li class="nav-item ms-2"><a class="btn btn-masuk" data-bs-toggle="modal" data-bs-target="#loginModal">Masuk</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section class="title-page">
+        <p><b>Beranda > Sewa Lapangan ></b> Gelora Bung Karno</p>
+    </section>
+
+    <section class="banner-field">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 left-1">
+                    <img src="Rectangle 217.png" alt="">
+                </div>
+                <div class="col-md-4 right-2">
+                    <div>
+                        <img src="stadion-2.png" alt="">
+                    </div>
+                    <div>
+                        <img src="stadion-3.png" alt="">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-field">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h3>Gelora Bung Karno</h3>
+                    <p>Jakarta Pusat - DKI Jakarta</p>
+                        <!-- Ikon Media Sosial -->
+                    <div class="icon-container">
+                        <div class="icon-box"><i class="fas fa-share-alt"></i></div>
+                        <div class="icon-box"><i class="fas fa-qrcode"></i></div>
+                        <div class="icon-box"><i class="fab fa-instagram"></i></div>
+                    </div>
+
+                    <!-- Label Sepak Bola -->
+                    <div class="label-container">
+                        <i class="fas fa-socks"></i> Sepak Bola
+                    </div>
+                    <hr>
+                    <div class="deskripsi">
+                        <p>
+                            <b style="font-size: 14px;">Deskripsi</b>
+                            <br>
+                            Lapangan olahraga RW 05 Karang Anyar menyediakan fasilitas lengkap untuk futsal dan basket, cocok untuk Anda yang ingin berolahraga atau mengadakan 
+                            pertandingan bersama teman. Berlokasi strategis di jantung Jakarta Pusat, Lapangan ini ideal untuk segala usia, baik untuk latihan santai maupun 
+                            kompetisi. Hubungi kami sekarang untuk reservasi dan nikmati pengalaman bermain yang seru!
+                        </p>
+                        <br>
+                        <p>
+                            <b style="font-size: 14px;">Aturan Vanue</b>
+                            <ol>
+                                <li>Disarankan menggunakan sepatu bola saat bermain dilapangan</li>
+                                <li>Wajib menjaga kebersihan lingkungan di dalam area Venue</li>
+                                <li>Wajib menjaga ketertiban lingkungan di dalam area venue</li>
+                                <li>Dilarang merokok di dalam area lapangan</li>
+                                <li>Dilarang membawa senjata tajam, alkohol/minuman keras, dan obat-obatan terlarang di area</li>
+                                <li>Dilarang KERAS meludah di dalam area Venue</li>
+                                <li>Dilarang bersandar pada jaring</li>
+                                <li>Reschedule harus dilakukan H-7 maksimal sebelum tanggal main sewa</li>
+                                <li>Reschedule maksimal 1x (harga menyesuaikan)</li>
+                                <li>Reschedule dengan Promo bisa direschedule dengan harga yang sama</li>
+                                <li>Jumlah pemain yang memasuki area lapangan maksimal 30 orang</li>
+                                <li>Non- Refund</li>
+                            </ol>  
+                        </p>
+                        <div class="map-container">
+                            <div class="map-overlay"></div>
+                            <a href="#" class="map-button">Lihat Map →</a>
+                        </div>
+                        <hr>
+                           <!-- Bagian Fasilitas -->
+                        <div class="fasilitas-container mb-4">
+                            <b style="font-size: 14px;">Fasilitas</b>
+                            <div class="fasilitas-list">
+                                <div class="fasilitas-item">
+                                    <i class="fas fa-mosque"></i><span>Mushola</span>
+                                </div>
+                                <div class="fasilitas-item">
+                                    <i class="fas fa-square-parking"></i>
+                                    <span>Parkir</span>
+                                </div>
+                                <div class="fasilitas-item">
+                                   <i class="fas fa-bath"></i>
+                                    <span>Kamar Mandi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <!-- Kartu Harga -->
+                    <div class="price-card">
+                        <p>Mulai Dari</p>
+                        <h2>Rp. 700.000 / Sesi</h2>
+                        <button>Cek Sekarang</button>
+                    </div>
+
+                    <!-- Pemilihan Tanggal -->
+                    <div class="date-picker">
+                        <div class="date-picker-header">
+                            Pilih Tanggal
+                            <i class="fas fa-calendar-days"></i>
+                        </div>
+
+                        <div class="day-grid">
+                            <span>Sen</span>
+                            <span>Sel</span>
+                            <span>Rab</span>
+                            <span>Kam</span>
+                            <span>Jum</span>
+                            <span>Sab</span>
+                            <span>Min</span>
+                        </div>
+
+                        <div class="date-grid">
+                            <div class="date-item">20 Jan</div>
+                            <div class="date-item selected-date">20 Jan</div>
+                            <div class="date-item">20 Jan</div>
+                            <div class="date-item">20 Jan</div>
+                            <div class="date-item">20 Jan</div>
+                            <div class="date-item">20 Jan</div>
+                            <div class="date-item">20 Jan</div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="booking-container mb-4">
+                    <!-- Gambar Lapangan -->
+                    <div class="image-container">
+                        <img src="lapangan-1.png" alt="Lapangan">
+                    </div>
+            
+                    <!-- Informasi Lapangan -->
+                    <div class="info-container">
+                        <h2>Lapangan 1</h2>
+                        <p>Lapangan futsal outdoor dengan permukaan lantai berbahan acrylic yang berukuran standar futsal dan dikelilingi pagar dengan jaring sebagai pembatas, sehingga bola tidak mudah keluar dari area permainan.</p>
+                        
+                        <div class="icon">
+                            <i class="fas fa-futbol px-2"> </i> 
+                            Sepak Bola
+                        </div>
+            
+                        <!-- Slot Booking -->
+                        <div class="slots-container">
+                            <div class="slot selected">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>08.00 - 09.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>09.00 - 10.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot disabled">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>10.00 - 11.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>12.00 - 13.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>13.00 - 14.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>14.00 - 15.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>15.00 - 16.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>16.00 - 17.00</span>
+                                Rp. 700.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>17.00 - 18.00</span>
+                                Rp. 900.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>18.00 - 19.00</span>
+                                Rp. 900.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>19.00 - 20.00</span>
+                                Rp. 900.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>20.00 - 21.00</span>
+                                Rp. 900.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>21.00 - 22.00</span>
+                                Rp. 900.000,-
+                            </div>
+                            <div class="slot available">
+                                <span style="font-size: 10px; color: grey;">60 Menit</span>
+                                <span>22.00 - 23.00</span>
+                                Rp. 900.000,-
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="venue-container">
+                    <h2>Rekomendasi Venue</h2>
+            
+                    <div class="venue-grid">
+                        <!-- Kartu Venue -->
+                        <div class="venue-card">
+                            <img src="Rectangle 217.png" alt="Venue">
+                            <div class="venue-content">
+                                <p>Venue</p>
+                                <h3>Gelora Bung Karno, Jakarta</h3>
+                                <div class="venue-rating">⭐⭐⭐⭐⭐ | Kota Jakarta Pusat</div>
+                                <div class="venue-icon">
+                                    <i class="fas fa-futbol px-2"> </i> 
+                                     Sepak Bola
+                                </div>
+                                <div class="venue-price">Mulai dari <b>Rp. 1.500.000,-</b> / Sesi</div>
+                            </div>
+                        </div>
+            
+                        <div class="venue-card">
+                            <img src="Rectangle 217.png" alt="Venue">
+                            <div class="venue-content">
+                                <p>Venue</p>
+                                <h3>Gelora Bung Karno, Jakarta</h3>
+                                <div class="venue-rating">⭐⭐⭐⭐⭐ | Kota Jakarta Pusat</div>
+                                <div class="venue-icon">
+                                    <i class="fas fa-futbol px-2"> </i> 
+                                     Sepak Bola
+                                </div>
+                                <div class="venue-price">Mulai dari <b>Rp. 1.500.000,-</b> / Sesi</div>
+                            </div>
+                        </div>
+            
+                        <div class="venue-card">
+                            <img src="Rectangle 217.png" alt="Venue">
+                            <div class="venue-content">
+                                <p>Venue</p>
+                                <h3>Gelora Bung Karno, Jakarta</h3>
+                                <div class="venue-rating">⭐⭐⭐⭐⭐ | Kota Jakarta Pusat</div>
+                                <div class="venue-icon">
+                                    <i class="fas fa-futbol px-2"> </i> 
+                                     Sepak Bola
+                                </div>
+                                <div class="venue-price">Mulai dari <b>Rp. 1.500.000,-</b> / Sesi</div>
+                            </div>
+                        </div>
+            
+                        <div class="venue-card">
+                            <img src="Rectangle 217.png" alt="Venue">
+                            <div class="venue-content">
+                                <p>Venue</p>
+                                <h3>Gelora Bung Karno, Jakarta</h3>
+                                <div class="venue-rating">⭐⭐⭐⭐⭐ | Kota Jakarta Pusat</div>
+                                <div class="venue-icon">
+                                    <i class="fas fa-futbol px-2"> </i> 
+                                     Sepak Bola
+                                </div>
+                                <div class="venue-price">Mulai dari <b>Rp. 1.500.000,-</b> / Sesi</div>
+                            </div>
+                        </div>
+            
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+        <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="loginModalLabel">Masuk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <p>Belum punya akun SparX? <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#DaftarModal">Daftar</a></p>
+                    <input type="text" class="form-control mb-3" placeholder="Masukan No Hp">
+                    <button class="btn btn-primary w-100">Selanjutnya</button>
+                    <div class="container text-center mt-4">
+                        <div class="text-divider">atau</div>
+                    </div>
+                    <button class="btn btn-google w-100">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Masuk dengan Google
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="DaftarModal" tabindex="-1" aria-labelledby="DaftarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="DaftarModalLabel">Daftar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <p>Sudah punya akun SparX? <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#loginrModal">Login</a></p>
+                    <input type="text" class="form-control mb-3" placeholder="Masukan No Hp">
+                    <button class="btn btn-primary w-100">Selanjutnya</button>
+                    <div class="container text-center mt-4">
+                        <div class="text-divider">atau</div>
+                    </div>
+                    <button class="btn btn-google w-100">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Masuk dengan Google
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ====================================================================== -->
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h5>Jadwal Dipilih</h5>
+            <button onclick="toggleCart()" class="btn-close"></button>
+        </div>
+        <div class="cart-body">
+            <div class="cart-item">
+                <img src="fasilitas 1.png" alt="Lapangan">
+                <div class="item-info">
+                    <strong>Lapangan 1 - Gelora Bung Karno</strong>
+                    <div class="d-flex waktu align-items-center">
+                        <p>Selasa, 21 Jan 2025 | 08:00-09:00</p> 
+                    </div>
+                    
+                    <p class="badge bg-primary">Rp. 700.000,-</p>
+                </div>
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <div class="cart-item">
+                <img src="fasilitas 1.png" alt="Lapangan">
+                <div class="item-info">
+                    <strong>Lapangan 1 - Gelora Bung Karno</strong>
+                    <div class="d-flex waktu align-items-center">
+                        <p>Selasa, 21 Jan 2025 | 08:00-09:00</p> 
+                    </div>
+                    
+                    <p class="badge bg-primary">Rp. 700.000,-</p>
+                </div>
+                <i class="fas fa-trash-alt"></i>
+            </div>
+        </div>
+        <div class="cart-footer mt-3">
+            <button class="btn btn-primary w-100">Selanjutnya</button>
+        </div>
+    </div>
+    
+    <script>
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

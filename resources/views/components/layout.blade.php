@@ -44,7 +44,24 @@
 </head>
 
 <body class="{{ $bodyClass }}">
-
+    @auth
+        <li class="nav-item">
+            <a class="nav-link" href="/">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('orders') }}">Pesanan</a>
+        </li>
+        <li class="nav-item">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button class="btn btn-danger btn-sm">Logout</button>
+            </form>
+        </li>
+    @else
+        <li class="nav-item">
+            <a class="btn btn-primary btn-sm" href="{{ route('login') }}">Login</a>
+        </li>
+    @endauth
     {{ $slot }}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

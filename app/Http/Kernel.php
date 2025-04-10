@@ -2,7 +2,11 @@
 
 namespace App\Http;
 
+use App\Models\Order;
+use App\Models\Payment;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends HttpKernel
 {
@@ -66,4 +70,19 @@ class Kernel extends HttpKernel
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->call(function () {
+            $expiredOrders = Order::where('payment_status', 'pending')
+                ->where('due_date', '<', now())
+                ->get();
+
+            foreach ($expiredOrders as $order) {
+                $order->update(['payment_status' => 'expired', 'status' => 'canceled']);
+                Payment::where('order_id', $order->id)->update(['payment_status' => 'expired']);
+            }
+
+            Log::info("✅ Semua order waiting yang expired sudah dikembalikan menjadi available.");
+        })->everyMinute();
+    }
 }

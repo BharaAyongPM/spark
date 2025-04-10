@@ -70,6 +70,15 @@
                         <span class="nav-link-text ms-1">DATA TIPE LAPANGAN</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ $activePage == 'absensiemas' ? ' active bg-gradient-success' : '' }} "
+                        href="{{ route('settings.index') }}">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">dashboard</i>
+                        </div>
+                        <span class="nav-link-text ms-1">DATA SETING</span>
+                    </a>
+                </li>
             @endif
             @if (auth()->user()->roles->contains('name_roles', 'PEMILIK'))
                 <li class="nav-item">
@@ -102,7 +111,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white {{ $activePage == 'absensiemas' ? ' active bg-gradient-success' : '' }} "
-                        href="#">
+                        href="{{ route('vendor.harga.index') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">dashboard</i>
                         </div>
@@ -111,7 +120,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white {{ $activePage == 'absensiemas' ? ' active bg-gradient-success' : '' }} "
-                        href="#">
+                        href="{{ route('vendor.indexvendor') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">dashboard</i>
                         </div>
@@ -120,11 +129,11 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white {{ $activePage == 'absensiemas' ? ' active bg-gradient-success' : '' }} "
-                        href="#">
+                        href="{{ route('vendor.jamoperasional.index') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">dashboard</i>
                         </div>
-                        <span class="nav-link-text ms-1">DATA TIPE LAPANGAN</span>
+                        <span class="nav-link-text ms-1">DATA JADWAL</span>
                     </a>
                 </li>
             @endif

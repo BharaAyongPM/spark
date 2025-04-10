@@ -33,6 +33,7 @@ class AuthController extends Controller
     }
     public function register(Request $request)
     {
+        Log::info('START REGISTER');
         Log::info('Received register request with data: ', $request->all());
         $request->validate([
             'name' => 'required|string|max:255',
@@ -41,6 +42,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
             'role' => 'required|string',
         ]);
+        Log::info('✅ Validasi OK');
 
         $user = User::create([
             'name' => $request->name,
@@ -48,10 +50,10 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
         ]);
-
+        Log::info('✅ User created: ' . $user->id);
         $role = Role::where('name_roles', $request->role)->firstOrFail();
         $user->roles()->attach($role->id);
-
+        Log::info('✅ Role attached');
         if ($user && $user->id) {
             if ($user->email) {
                 $this->sendOtp($user, 'email');
@@ -121,7 +123,7 @@ class AuthController extends Controller
         if ($request->otp == $otpRecord->otp_code && now()->lessThan($otpRecord->expiry_time)) {
             // OTP valid
             Auth::login($user);
-            return redirect()->route('dashboard');
+            return redirect('/');
         } else {
             // OTP invalid atau sudah kadaluarsa
             return back()->withErrors(['otp' => 'Invalid or expired OTP.']);
@@ -154,7 +156,7 @@ class AuthController extends Controller
             } elseif ($user->roles->contains('name_roles', 'PEMILIK')) {
                 return redirect()->intended('vendor/dashboard');
             } elseif ($user->roles->contains('name_roles', 'PENYEWA')) {
-                return redirect()->intended('user/dashboard');
+                return redirect()->intended('/');
             }
 
             // Default redirect jika tidak ada role yang sesuai

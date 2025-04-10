@@ -6,8 +6,13 @@ use App\Models\Facility;
 use App\Models\Field;
 use App\Models\FieldFacility;
 use App\Models\FieldType;
+use App\Models\JamOperasional;
 use App\Models\Location;
+use App\Models\Pricing;
+use App\Models\Rekening;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -135,9 +140,15 @@ class VendorController extends Controller
 
     public function fieldsDestroy(Field $field)
     {
-        // Hapus file foto dan banner dari storage
-        Storage::disk('public')->delete($field->foto);
-        Storage::disk('public')->delete($field->banner);
+        // Hapus file foto jika ada
+        if ($field->foto && Storage::disk('public')->exists($field->foto)) {
+            Storage::disk('public')->delete($field->foto);
+        }
+
+        // Hapus file banner jika ada
+        if ($field->banner && Storage::disk('public')->exists($field->banner)) {
+            Storage::disk('public')->delete($field->banner);
+        }
 
         // Hapus data lapangan
         $field->delete();
@@ -150,9 +161,17 @@ class VendorController extends Controller
         if ($field->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
+
+        // Ambil semua tipe lapangan
         $fieldTypes = FieldType::all();
+
+        // Ambil semua lokasi
         $locations = Location::all();
-        return view('vendor.fields.show', compact('field', 'fieldTypes', 'locations'));
+
+        // Ambil semua fasilitas
+        $facilities = Facility::all();
+
+        return view('vendor.fields.show', compact('field', 'fieldTypes', 'locations', 'facilities'));
     }
 
     public function fieldsUpdate(Request $request, Field $field)
@@ -187,5 +206,220 @@ class VendorController extends Controller
         $field->update($request->all());
 
         return redirect()->back()->with('success', 'Field updated successfully.');
+    }
+
+
+    public function indexvendor()
+    {
+        // Ambil data user yang sedang login
+        $vendor = Auth::user();
+        $rekening = Rekening::where('id_user', $vendor->id)->first();
+
+        return view('vendor.viewvendor', compact('vendor', 'rekening'));
+    }
+
+    /**
+     * Update data vendor.
+     */
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+        ]);
+
+        $vendor = Auth::user();
+        $vendor->update($request->only('name', 'email'));
+
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    /**
+     * Update password vendor.
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $vendor = Auth::user();
+
+        if (!Hash::check($request->current_password, $vendor->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Password saat ini salah.']);
+        }
+
+        $vendor->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return redirect()->back()->with('success', 'Password berhasil diperbarui.');
+    }
+
+    /**
+     * Tambah atau update rekening.
+     */
+    public function updateRekening(Request $request)
+    {
+        $request->validate([
+            'nama_bank' => 'required|string|max:100',
+            'rekening' => 'required|string|max:50',
+            'nama' => 'required|string|max:100',
+            'email' => 'nullable|email|max:100',
+        ]);
+
+        Rekening::updateOrCreate(
+            ['id_user' => Auth::id()],
+            $request->only('nama_bank', 'rekening', 'nama', 'email')
+        );
+
+        return redirect()->back()->with('success', 'Data rekening berhasil diperbarui.');
+    }
+
+    //HARGA
+    public function hargaIndex()
+    {
+        $fields = Field::where('user_id', Auth::id())->get();
+        $pricing = Pricing::whereIn('field_id', $fields->pluck('id'))->get();
+
+        return view('vendor.viewharga', compact('fields', 'pricing'));
+    }
+
+    /**
+     * Tambah harga baru.
+     */
+    public function tambahHarga(Request $request)
+    {
+        $request->validate([
+            'field_id' => 'required|exists:fields,id',
+            'price' => 'required|numeric|min:0',
+            'time_slot' => 'required|in:morning,afternoon,evening',
+            'day_type' => 'required|in:weekday,weekend',
+        ]);
+
+        // Validasi jika kombinasi time_slot dan day_type sudah ada
+        $exists = Pricing::where('field_id', $request->field_id)
+            ->where('time_slot', $request->time_slot)
+            ->where('day_type', $request->day_type)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->withErrors(['error' => 'Harga untuk waktu dan jenis hari ini sudah ada.']);
+        }
+
+        Pricing::create([
+            'field_id' => $request->field_id,
+            'price' => $request->price,
+            'time_slot' => $request->time_slot,
+            'day_type' => $request->day_type,
+        ]);
+
+        return redirect()->back()->with('success', 'Harga berhasil ditambahkan.');
+    }
+
+    /**
+     * Update harga yang sudah ada.
+     */
+    public function updateHarga(Request $request, $id)
+    {
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $pricing = Pricing::findOrFail($id);
+
+        // Pastikan harga milik lapangan user yang sedang login
+        if (!Field::where('id', $pricing->field_id)->where('user_id', Auth::id())->exists()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $pricing->update([
+            'price' => $request->price,
+        ]);
+
+        return redirect()->back()->with('success', 'Harga berhasil diperbarui.');
+    }
+
+    //JAM OPERASIONAL
+    public function jamOperasionalIndex()
+    {
+        $fields = Field::where('user_id', Auth::id())->get();
+        $jamOperasionals = JamOperasional::whereIn('field_id', $fields->pluck('id'))->get();
+
+        return view('vendor.viewjamoperasional', compact('fields', 'jamOperasionals'));
+    }
+
+    /**
+     * Menambah jam operasional.
+     */
+
+    public function jamOperasionalStore(Request $request)
+    {
+        $request->validate([
+            'field_id' => 'required|exists:fields,id',
+            '*.buka' => 'nullable|date_format:H:i',
+            '*.tutup' => 'nullable|date_format:H:i',
+        ]);
+
+        // Format data jam operasional
+        $data = [];
+        foreach (['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'] as $day) {
+            $data[$day] = $request->input("{$day}_buka") && $request->input("{$day}_tutup")
+                ? $request->input("{$day}_buka") . ' - ' . $request->input("{$day}_tutup")
+                : null;
+        }
+
+        $data['field_id'] = $request->field_id;
+
+        JamOperasional::create($data);
+
+        return redirect()->back()->with('success', 'Jam operasional berhasil ditambahkan.');
+    }
+
+    /**
+     * Update jam operasional.
+     */
+    public function jamOperasionalUpdate(Request $request, $id)
+    {
+        $request->validate([
+            '*.buka' => 'nullable|date_format:H:i',
+            '*.tutup' => 'nullable|date_format:H:i',
+        ]);
+
+        $jamOperasional = JamOperasional::findOrFail($id);
+
+        // Pastikan jam operasional milik lapangan vendor yang sedang login
+        if (!Field::where('id', $jamOperasional->field_id)->where('user_id', Auth::id())->exists()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Format data jam operasional
+        $data = [];
+        foreach (['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'] as $day) {
+            $data[$day] = $request->input("{$day}_buka") && $request->input("{$day}_tutup")
+                ? $request->input("{$day}_buka") . ' - ' . $request->input("{$day}_tutup")
+                : null;
+        }
+
+        $jamOperasional->update($data);
+
+        return redirect()->back()->with('success', 'Jam operasional berhasil diperbarui.');
+    }
+    /**
+     * Menghapus jam operasional.
+     */
+    public function jamOperasionalDestroy($id)
+    {
+        $jamOperasional = JamOperasional::findOrFail($id);
+
+        // Pastikan jam operasional milik lapangan vendor yang sedang login
+        if (!Field::where('id', $jamOperasional->field_id)->where('user_id', Auth::id())->exists()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $jamOperasional->delete();
+
+        return redirect()->back()->with('success', 'Jam operasional berhasil dihapus.');
     }
 }

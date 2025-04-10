@@ -63,7 +63,7 @@ class AdminController extends Controller
             ->map(function ($order) {
                 $order->orderItems->each(function ($item) {
                     $item->field_name = $item->field->name; // Asumsikan field memiliki kolom 'name'
-                    $item->owner_name = $item->field->owner->name; // Asumsi relasi 'owner' dalam model 'Field'
+                    $item->owner_name = $item->field->user->name; // Asumsi relasi 'owner' dalam model 'Field'
                 });
                 return $order;
             });

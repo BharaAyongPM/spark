@@ -16,7 +16,11 @@ class Order extends Model
         'total_price',
         'status',
         'discount_code',
-        'payment_status'
+        'payment_status',
+        'invoice_number',
+
+        'due_date'
+
     ];
 
     // Relasi ke model User

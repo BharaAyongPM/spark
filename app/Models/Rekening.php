@@ -17,6 +17,8 @@ class Rekening extends Model
         'id_user',
         'nama_bank',
         'rekening',
+        'nama',
+        'email'
     ];
 
     /**

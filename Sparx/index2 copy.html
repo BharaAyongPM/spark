@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparX Landing Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pontano+Sans&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="logo.png" alt="SparX">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Venue</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Berita</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Jelajah</a></li>
+                    <li class="nav-item d-flex align-items-center">
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item cart-icon" onclick="toggleCart()">
+                                    <i class="fas fa-shopping-cart fa-lg"></i>
+                                    <span class="cart-badge">2</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item ms-3"><a class="btn btn-daftar" data-bs-toggle="modal" data-bs-target="#DaftarModal">Daftar</a></li>
+                    <li class="nav-item ms-2"><a class="btn btn-masuk" data-bs-toggle="modal" data-bs-target="#loginModal">Masuk</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <section class="hero-section shadow-md">
+        <div class="col-md-6 hero-text">
+            <h2><span class="terra">TERRA SPAR</span> <span class="x">X</span> Hadir untuk membantu anda mencari tempat olahraga dan nongkrong, nih</h2>
+        </div>
+        <div class="col-md-6 hero-img">
+            <img src="devices.png" alt="Devices" width="350">
+        </div>
+    </section>
+
+    <!-- Section 2: Search, Venue List, and Pagination -->
+    <section class="search-venue-section">
+        <div class="search-form">
+            <input type="text" class="form-control vanue" placeholder="Cari nama venue">
+            <select class="form-control">
+                <option>Pilih kota</option>
+            </select>
+            <select class="form-control">
+                <option>Pilih Cabang Olahraga</option>
+            </select>
+            <button class="btn btn-primary">Cek Venue</button>
+        </div>
+
+        <hr>
+
+        <div class="venue-list row mt-4">
+            <div class="col-md-3">
+                <div class="venue-item">
+                    <img src="fasilitas 1.png" class="img-fluid vanue-img" alt="Lapangan">
+                    <div class="details">
+                        <span class="jenis">Vanue</span>
+                        <h5>Gelora Bung Karno, Jakarta</h5>
+                        <p>⭐⭐⭐⭐⭐| Jakarta Pusat</p>
+                        <span class="jenis"><i class="fa fa-futbol"></i> Sepak Bola</span>
+                        <p>Mulai dari <strong style="color: #003f88;">Rp. 1.500.000,- / Sesi</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="venue-item">
+                    <img src="fasilitas 1.png" class="img-fluid vanue-img" alt="Lapangan">
+                    <div class="details">
+                        <span class="jenis">Vanue</span>
+                        <h5>Gelora Bung Karno, Jakarta</h5>
+                        <p>⭐⭐⭐⭐⭐| Jakarta Pusat</p>
+                        <span class="jenis"><i class="fa fa-futbol"></i> Sepak Bola</span>
+                        <p>Mulai dari <strong style="color: #003f88;">Rp. 1.500.000,- / Sesi</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="venue-item">
+                    <img src="fasilitas 1.png" class="img-fluid vanue-img" alt="Lapangan">
+                    <div class="details">
+                        <span class="jenis">Vanue</span>
+                        <h5>Gelora Bung Karno, Jakarta</h5>
+                        <p>⭐⭐⭐⭐⭐| Jakarta Pusat</p>
+                        <span class="jenis"><i class="fa fa-futbol"></i> Sepak Bola</span>
+                        <p>Mulai dari <strong style="color: #003f88;">Rp. 1.500.000,- / Sesi</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="venue-item">
+                    <img src="fasilitas 1.png" class="img-fluid vanue-img" alt="Lapangan">
+                    <div class="details">
+                        <span class="jenis">Vanue</span>
+                        <h5>Gelora Bung Karno, Jakarta</h5>
+                        <p>⭐⭐⭐⭐⭐| Jakarta Pusat</p>
+                        <span class="jenis"><i class="fa fa-futbol"></i> Sepak Bola</span>
+                        <p>Mulai dari <strong style="color: #003f88;">Rp. 1.500.000,- / Sesi</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination-container mt-4">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+
+        <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="loginModalLabel">Masuk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <p>Belum punya akun SparX? <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#DaftarModal">Daftar</a></p>
+                    <input type="text" class="form-control mb-3" placeholder="Masukan No Hp">
+                    <button class="btn btn-primary w-100">Selanjutnya</button>
+                    <div class="container text-center mt-4">
+                        <div class="text-divider">atau</div>
+                    </div>
+                    <button class="btn btn-google w-100">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Masuk dengan Google
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="DaftarModal" tabindex="-1" aria-labelledby="DaftarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="DaftarModalLabel">Daftar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <p>Sudah punya akun SparX? <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#loginrModal">Login</a></p>
+                    <input type="text" class="form-control mb-3" placeholder="Masukan No Hp">
+                    <button class="btn btn-primary w-100">Selanjutnya</button>
+                    <div class="container text-center mt-4">
+                        <div class="text-divider">atau</div>
+                    </div>
+                    <button class="btn btn-google w-100">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Masuk dengan Google
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ====================================================================== -->
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h5>Jadwal Dipilih</h5>
+            <button onclick="toggleCart()" class="btn-close"></button>
+        </div>
+        <div class="cart-body">
+            <div class="cart-item">
+                <img src="fasilitas 1.png" alt="Lapangan">
+                <div class="item-info">
+                    <strong>Lapangan 1 - Gelora Bung Karno</strong>
+                    <div class="d-flex waktu align-items-center">
+                        <p>Selasa, 21 Jan 2025 | 08:00-09:00</p> 
+                    </div>
+                    
+                    <p class="badge bg-primary">Rp. 700.000,-</p>
+                </div>
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <div class="cart-item">
+                <img src="fasilitas 1.png" alt="Lapangan">
+                <div class="item-info">
+                    <strong>Lapangan 1 - Gelora Bung Karno</strong>
+                    <div class="d-flex waktu align-items-center">
+                        <p>Selasa, 21 Jan 2025 | 08:00-09:00</p> 
+                    </div>
+                    
+                    <p class="badge bg-primary">Rp. 700.000,-</p>
+                </div>
+                <i class="fas fa-trash-alt"></i>
+            </div>
+        </div>
+        <div class="cart-footer mt-3">
+            <button class="btn btn-primary w-100">Selanjutnya</button>
+        </div>
+    </div>
+    
+    <script>
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

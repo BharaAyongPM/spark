@@ -9,8 +9,13 @@
 </head>
 
 <body>
+    @if (session('message'))
+        <div class="alert alert-warning">
+            {{ session('message') }}
+        </div>
+    @endif
     <div class="container">
-        <h2>Login</h2>
+        <h2>SIlahkan Login</h2>
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <div>
