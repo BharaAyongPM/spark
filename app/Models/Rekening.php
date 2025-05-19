@@ -29,4 +29,8 @@ class Rekening extends Model
     {
         return $this->belongsTo(User::class, 'id_user');
     }
+    public function withdraws()
+    {
+        return $this->hasMany(Withdraw::class);
+    }
 }

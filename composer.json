@@ -11,6 +11,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.7",
+        "maatwebsite/excel": "^3.1",
         "xendit/xendit-php": "^6.0"
     },
     "require-dev": {

@@ -3,136 +3,110 @@
 @section('title', 'Home - MyApp')
 @section('content')
 
-    <div class="container mt-5">
-        <h2>Histori Pesanan</h2>
+    <section class="container my-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="fw-bold mb-4">Pemesanan</h5>
 
-        @if ($orders->isEmpty())
-            <p class="text-muted">Belum ada pesanan.</p>
-        @else
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tanggal</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($orders as $order)
-                        <tr>
-                            <td>{{ $order->id }}</td>
-                            <td>{{ $order->created_at->format('d M Y H:i') }}</td>
-                            <td>Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                            <td>
-                                <span
-                                    class="badge bg-{{ $order->status === 'completed' ? 'success' : ($order->status === 'pending' ? 'warning' : 'danger') }}">
-                                    {{ ucfirst($order->status) }}
-                                </span>
-                            </td>
-                            <td>
-                                <button class="btn btn-info btn-sm show-order-details" data-order-id="{{ $order->id }}">
-                                    Lihat Detail
-                                </button>
+                {{-- Tabs --}}
+                <ul class="nav nav-tabs mb-4" id="orderTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending"
+                            type="button" role="tab">Menunggu Pembayaran</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ongoing-tab" data-bs-toggle="tab" data-bs-target="#ongoing"
+                            type="button" role="tab">Sedang Berjalan</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed"
+                            type="button" role="tab">Selesai</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled"
+                            type="button" role="tab">Dibatalkan</button>
+                    </li>
+                </ul>
 
-                                @if ($order->status === 'pending')
-                                    <button class="btn btn-success btn-sm pay-order" data-order-id="{{ $order->id }}">
-                                        Bayar
-                                    </button>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-    </div>
+                {{-- Tab Content --}}
+                <div class="tab-content" id="orderTabsContent">
 
-    <!-- Modal untuk Detail Pesanan -->
-    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detail Pesanan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    {{-- Menunggu Pembayaran --}}
+                    <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                        @include('components.orders-tab', [
+                            'orders' => $orders->where('status', 'pending'),
+                        ])
+                    </div>
+
+                    {{-- Sedang Berjalan --}}
+                    <div class="tab-pane fade" id="ongoing" role="tabpanel">
+                        @include('components.orders-tab', [
+                            'orders' => $orders->where('status', 'ongoing'),
+                        ])
+                    </div>
+
+                    {{-- Selesai --}}
+                    <div class="tab-pane fade" id="completed" role="tabpanel">
+                        @include('components.orders-tab', [
+                            'orders' => $orders->where('status', 'completed'),
+                        ])
+                    </div>
+
+                    {{-- Dibatalkan --}}
+                    <div class="tab-pane fade" id="cancelled" role="tabpanel">
+                        @include('components.orders-tab', [
+                            'orders' => $orders->where('status', 'cancelled'),
+                        ])
+                    </div>
+
                 </div>
-                <div class="modal-body">
-                    <p><strong>ID Pesanan:</strong> <span id="order-id"></span></p>
-                    <p><strong>Tanggal:</strong> <span id="order-date"></span></p>
-                    <p><strong>Total Harga:</strong> Rp <span id="order-total"></span></p>
-                    <p><strong>Status:</strong> <span id="order-status" class="badge"></span></p>
-                    <h5>Detail Lapangan</h5>
-                    <ul id="order-items"></ul>
-                </div>
+
             </div>
         </div>
-    </div>
 
-    @push('js')
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                // Tampilkan detail pesanan dalam modal
-                document.querySelectorAll(".show-order-details").forEach(button => {
-                    button.addEventListener("click", function() {
-                        let orderId = this.dataset.orderId;
+        {{-- Modal Detail Pesanan --}}
+        @include('components.order-details-modal')
 
-                        fetch(`/orders/${orderId}`)
-                            .then(response => response.json())
-                            .then(order => {
-                                document.getElementById("order-id").textContent = order.id;
-                                document.getElementById("order-date").textContent = new Date(order
-                                    .created_at).toLocaleString();
-                                document.getElementById("order-total").textContent = new Intl
-                                    .NumberFormat('id-ID').format(order.total_price);
+        @push('js')
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                            document.addEventListener("click", function(e) {
+                                if (e.target.classList.contains("show-order-details")) {
+                                    let orderId = e.target.dataset.orderId;
 
-                                let statusElement = document.getElementById("order-status");
-                                statusElement.textContent = order.status.charAt(0).toUpperCase() +
-                                    order.status.slice(1);
-                                statusElement.className = "badge bg-" + (order.status ===
-                                    "completed" ? "success" : (order.status === "pending" ?
-                                        "warning" : "danger"));
+                                    fetch(`/orders/${orderId}`)
+                                        .then(response => response.json())
+                                        .then(order => {
+                                            document.getElementById("order-id").textContent = order.id;
+                                            document.getElementById("order-date").textContent = new Date(order
+                                                .created_at).toLocaleString();
+                                            document.getElementById("order-total").textContent = new Intl.NumberFormat(
+                                                'id-ID').format(order.total_price);
 
-                                let itemsList = document.getElementById("order-items");
-                                itemsList.innerHTML = "";
-                                order.items.forEach(item => {
-                                    let listItem = document.createElement("li");
-                                    listItem.textContent =
-                                        `Lapangan ${item.field_name} - ${item.date} (${item.time})`;
-                                    itemsList.appendChild(listItem);
-                                });
+                                            let statusElement = document.getElementById("order-status");
+                                            statusElement.textContent = order.status.charAt(0).toUpperCase() + order
+                                                .status.slice(1);
+                                            statusElement.className = "badge bg-" + (order.status === "completed" ?
+                                                "success" : (order.status === "pending" ? "warning" : (order
+                                                    .status === "ongoing" ? "info" : "danger")));
 
-                                let modal = new bootstrap.Modal(document.getElementById(
-                                    "orderDetailsModal"));
-                                modal.show();
-                            })
-                            .catch(error => console.error("Error fetching order details:", error));
-                    });
-                });
+                                            let itemsList = document.getElementById("order-items");
+                                            itemsList.innerHTML = "";
+                                            order.items.forEach(item => {
+                                                let listItem = document.createElement("li");
+                                                listItem.textContent =
+                                                    `Lapangan ${item.field_name} - ${item.date} (${item.time})`;
+                                                itemsList.appendChild(listItem);
+                                            });
 
-                // Tombol bayar pesanan
-                document.querySelectorAll(".pay-order").forEach(button => {
-                    button.addEventListener("click", function() {
-                        let orderId = this.dataset.orderId;
-
-                        Swal.fire({
-                            title: "Konfirmasi Pembayaran",
-                            text: "Apakah Anda ingin melanjutkan pembayaran?",
-                            icon: "question",
-                            showCancelButton: true,
-                            confirmButtonText: "Ya, Bayar",
-                            cancelButtonText: "Batal"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Redirect langsung ke halaman checkout
-                                window.location.href = `/checkout?order_id=${orderId}`;
-                            }
-                        });
-                    });
-                });
-            });
-        </script>
-    @endpush
-
-
+                                            let modal = new bootstrap.Modal(document.getElementById(
+                                                "orderDetailsModal"));
+                                            modal.show();
+                                        })
+                                        .catch(error => console.error("Error fetching order details:", error));
+                                }
+                            });
+            </script>
+        @endpush
+    </section>
 @endsection

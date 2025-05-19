@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Pontano+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     {{-- Custom --}}
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
@@ -21,37 +23,54 @@
 
 <body>
     {{-- Navbar --}}
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top fixed-top">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <img src="{{ asset('assets/img/logo.png') }}" alt="SparX">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="d-flex align-items-center">
+                <!-- ICON KERANJANG UNTUK MOBILE -->
+                <div class="cart-icon me-2 d-lg-none" onclick="toggleCart()" style="cursor:pointer">
+                    <i class="fas fa-shopping-cart fa-lg text-white"></i>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </div>
 
+                <!-- SEPARATOR -->
+                <div class="vr mx-2 d-lg-none" style="height: 40px; background-color: rgba(255,255,255,0.5);"></div>
+
+
+                <!-- HAMBURGER MENU -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
                     <li class="nav-item"><a class="nav-link" href="/lapangan">Venue</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Berita</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Jelajah</a></li>
-                    <li class="nav-item d-flex align-items-center">
+                    <li class="nav-item d-md-flex align-items-center d-none d-md-block ">
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item cart-icon" onclick="toggleCart()">
                                     <i class="fas fa-shopping-cart fa-lg"></i>
-                                    <span class="cart-badge" id="cart-count">0</span>
+                                    <span class="cart-badge" id="desktop-cart-count">0</span>
                                 </li>
                             </ul>
                         </div>
                     </li>
                     @guest
-                        <li class="nav-item ms-3">
+                        <li class="nav-item ms-3 d-none d-md-block">
                             <a class="btn btn-daftar" data-bs-toggle="modal" data-bs-target="#DaftarModal">Daftar</a>
                         </li>
-                        <li class="nav-item ms-2">
+                        <li class="nav-item ms-2 d-none d-md-block">
                             <a class="btn btn-masuk" data-bs-toggle="modal" data-bs-target="#loginModal">Masuk</a>
+                        </li>
+
+                        <li class="nav-item d-lg-flex d-block d-lg-none w-100 justify-content-end gap-2 mt-2 mt-lg-0">
+                            <a class="btn btn-daftar w-auto" data-bs-toggle="modal" data-bs-target="#DaftarModal">Daftar</a>
+                            <a class="btn btn-masuk w-auto" data-bs-toggle="modal" data-bs-target="#loginModal">Masuk</a>
                         </li>
                     @else
                         <li class="nav-item dropdown ms-3">
@@ -71,6 +90,9 @@
 
                                 <li>
                                     <a href="/orders" class="dropdown-item">pesanan</a>
+                                </li>
+                                <li>
+                                    <a href="/profile" class="dropdown-item">Profil</a>
                                 </li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
@@ -157,9 +179,61 @@
         </div>
     </div>
 
+
+    <footer class="footer-sparx text-white py-5">
+        <div class="container-footer">
+            <div class="row">
+                <!-- Kolom 1 -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold">Perusahaan :</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li><a href="/" class="footer-link">Beranda</a></li>
+                        <li><a href="/lapangan" class="footer-link">Vanue</a></li>
+                        <li><a href="/berita" class="footer-link">Berita</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolom 2 -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold">Produk :</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li><a href="/lapangan" class="footer-link">Vanue</a></li>
+                        <li><a href="#" class="footer-link">Nobar</a></li>
+                        <li><a href="#" class="footer-link">Shoping</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolom 3 -->
+                <div class="col-md-4 text-md-start text-center">
+                    <img src="{{ asset('assets/img/logo.png') }}" alt="SparX" class="mb-3"
+                        style="max-height: 45px;">
+                    <div class="d-flex social-media">
+                        <a href="https://www.instagram.com/sparx_id?igsh=MThyZGp6OGY2NTF1eg=="><img
+                                src="{{ asset('assets/img/instagram (1).png') }}" alt=""></a>
+                        <a href=""><img src="{{ asset('assets/img/facebook.png') }}" alt=""></a>
+                        <a href="https://www.tiktok.com/@sparx_id?_t=ZS-8vmwDCq5DX7&_r=1"><img
+                                src="{{ asset('assets/img/tik-tok.png') }}" alt=""></a>
+                    </div>
+                    <div class="d-md-flex">
+                        <p class="fw-bold mb-2 mx-2">Powered By : </p>
+                        <img src=" {{ asset('assets/img/logo bb1.png') }}" alt="Bisa Bola" class="mb-2"
+                            style="max-height: 35px;">
+                    </div>
+                    <p class="mt-3 small">
+                        Alamat : Jl. Panglima Polim No.116i, RT.01/RW06<br>
+                        Kel. Melawai, Kec. Kebayoran Baru<br>
+                        Jakarta Selatan, Indonesia, 12130
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const cartCountElement = document.getElementById('cart-count');
+            const cartCountMobile = document.getElementById('cart-count');
+            const cartCountDesktop = document.getElementById('desktop-cart-count');
             const cartItemsElement = document.getElementById('cart-items');
             const cartSidebar = document.getElementById('cartSidebar');
 
@@ -181,7 +255,10 @@
                     `;
                     cartItemsElement.insertAdjacentHTML('beforeend', itemHTML);
                 });
-                cartCountElement.textContent = Object.keys(cart).length;
+
+                const count = Object.keys(cart).length;
+                if (cartCountMobile) cartCountMobile.textContent = count;
+                if (cartCountDesktop) cartCountDesktop.textContent = count;
             }
 
             window.removeCartItem = function(key, fieldId, date, timeSlot) {
@@ -204,7 +281,7 @@
                             renderCartItems();
                         }
                     });
-            }
+            };
 
             document.querySelectorAll('.slot-item').forEach(slot => {
                 slot.addEventListener('click', function() {
@@ -248,15 +325,18 @@
                 });
             });
 
-            document.getElementById('cart-button').addEventListener('click', function() {
-                toggleCart();
-            });
+            const cartButton = document.getElementById('cart-button');
+            if (cartButton) {
+                cartButton.addEventListener('click', function() {
+                    toggleCart();
+                });
+            }
 
             function toggleCart() {
                 cartSidebar.classList.toggle('active');
             }
-            window.toggleCart = toggleCart;
 
+            window.toggleCart = toggleCart;
         });
     </script>
 
@@ -267,6 +347,60 @@
             document.getElementById('cartSidebar').classList.toggle('active');
         }
     </script>
+
+    <script>
+        function goToStep(stepNumber, aktivitas = '') {
+            document.querySelectorAll('.search-step').forEach(el => el.classList.add('d-none'));
+            document.querySelector('.step-' + stepNumber).classList.remove('d-none');
+
+            if (aktivitas) {
+                console.log("Aktivitas dipilih: " + aktivitas);
+                // kamu bisa simpan ini di localStorage atau form tersembunyi
+            }
+        }
+    </script>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        const swiper = new Swiper('.news-swiper', {
+            loop: true,
+            spaceBetween: 24,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                0: {
+                    slidesPerView: 1,
+                },
+                768: {
+                    slidesPerView: 2,
+                },
+                992: {
+                    slidesPerView: 3,
+                }
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            new Swiper(".bannerSwiper", {
+                loop: true,
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true
+                },
+            });
+        });
+    </script>
+
 
     @stack('js')
 </body>

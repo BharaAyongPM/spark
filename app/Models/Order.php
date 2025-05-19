@@ -18,7 +18,7 @@ class Order extends Model
         'discount_code',
         'payment_status',
         'invoice_number',
-
+        'addon_price',
         'due_date'
 
     ];

@@ -12,16 +12,51 @@
         </div>
     </section>
     <section class="search-venue-section">
-        <div class="search-form">
-            <input type="text" class="form-control vanue" placeholder="Cari nama venue">
-            <select class="form-control">
-                <option>Pilih kota</option>
+        <form action="{{ route('home.indexfield') }}" method="GET" class="search-form">
+            <input type="text" name="name" class="form-control vanue" placeholder="Cari nama venue"
+                value="{{ request('name') }}">
+
+            <select name="location_id" class="form-control">
+                <option value="">Pilih kota</option>
+                @foreach ($locations as $location)
+                    <option value="{{ $location->id }}" {{ request('location_id') == $location->id ? 'selected' : '' }}>
+                        {{ $location->name }}
+                    </option>
+                @endforeach
             </select>
-            <select class="form-control">
-                <option>Pilih Cabang Olahraga</option>
+
+            <select name="field_type_id" class="form-control">
+                <option value="">Pilih Cabang Olahraga</option>
+                @foreach ($fieldTypes as $type)
+                    <option value="{{ $type->id }}" {{ request('field_type_id') == $type->id ? 'selected' : '' }}>
+                        {{ $type->type_name }}
+                    </option>
+                @endforeach
             </select>
-            <button class="btn btn-primary">Cek Venue</button>
-        </div>
+
+            <button type="submit" class="btn btn-primary">Cek Venue</button>
+        </form>
+
+        @if (request()->filled('field_type_id') || request()->filled('location_id') || request()->filled('date'))
+            <div class="alert alert-info mt-3" style="font-size: 14px;">
+                Menampilkan hasil untuk
+                @if (request()->filled('field_type_id'))
+                    <strong>
+                        {{ \App\Models\FieldType::find(request('field_type_id'))->type_name ?? 'Aktivitas tidak ditemukan' }}
+                    </strong>
+                @endif
+
+                @if (request()->filled('location_id'))
+                    di <strong>
+                        {{ \App\Models\Location::find(request('location_id'))->name ?? 'Lokasi tidak ditemukan' }}
+                    </strong>
+                @endif
+
+                @if (request()->filled('date'))
+                    pada tanggal <strong>{{ \Carbon\Carbon::parse(request('date'))->format('d M Y') }}</strong>
+                @endif
+            </div>
+        @endif
 
         <hr>
         <div class="venue-list row mt-4">

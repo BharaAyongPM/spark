@@ -4,6 +4,7 @@ body {
 .navbar {
     background: linear-gradient(90deg, #0055B6 32.17%, #00418C 100%);
     padding: 10px 0;
+    z-index: 1000;
 }
 .navbar-brand img {
     height: 50px;
@@ -15,7 +16,11 @@ body {
 }
 .navbar-nav .nav-link:hover {
     text-decoration: none;
-    border-bottom: 3px solid #ffc107;
+    border-bottom: 1px solid #ffc107;
+}
+.nav-link.active {
+    text-decoration: none;
+    border-bottom: 1px solid #ffc107;
 }
 .btn-daftar {
     background-color: white;
@@ -23,11 +28,19 @@ body {
     border-radius: 5px;
     padding: 8px 15px;
 }
+.btn-daftar:hover {
+    background-color: #ffc107;
+    color: white;
+}
 .btn-masuk {
     background-color: #ffc107;
     color: black;
     border-radius: 5px;
     padding: 8px 15px;
+}
+.btn-masuk:hover {
+    background-color: white;
+    color: #ffc107;
 }
 .cart-icon {
     color: white;
@@ -44,6 +57,28 @@ body {
     border-radius: 50%;
     padding: 2px 6px;
 }
+
+@media (max-width: 991.98px) {
+    #navbarNav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        z-index: 999;
+        background-color: #002b5b; /* Sesuaikan warna navbar kamu */
+        padding: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+@media (min-width: 992px) {
+    #navbarNav {
+        position: static !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+    }
+}
+
 .banner-section {
     height: 110vh;
     background: url('/assets/img/banner.png') no-repeat;
@@ -64,6 +99,7 @@ body {
     margin-right: auto;
     max-width: 900px;
     display: flex;
+    flex-wrap: nowrap; /* untuk jaga supaya tidak turun */
     align-items: center;
     justify-content: space-between;
     z-index: 100;
@@ -97,7 +133,30 @@ body {
     margin-left: 10px;
 }
 
+.search-wizard-mobile {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: auto;
+    margin-top: 1rem;
+}
+
+.search-wizard-mobile .list-group-item {
+    cursor: pointer;
+}
+
+
 @media (max-width: 756px) {
+    .banner-section {
+        background: url('/assets/img/banner-mobile.png') no-repeat;
+        background-size: cover;
+        background-position: center;
+        width: 100%;
+        z-index: 99;
+        height: 50vh;
+    }
+
     .search-section {
         flex-direction: column;
         align-items: stretch;
@@ -202,6 +261,13 @@ body {
     font-family: 'Rubik';
 }
 
+
+@media (max-width: 768px) {
+    .description {
+        width: 100%;
+    }
+}
+
 .why-sparx {
     padding: 10px 0;
     margin: 0 auto;
@@ -211,6 +277,11 @@ body {
 .why-sparx h2 {
     font-weight: 700;
 }
+
+.why-sparx p {
+    justify-content:space-between
+}
+
 .why-sparx .highlight {
     color: #ffc107;
 }
@@ -287,6 +358,12 @@ body {
     margin-top: 15px;
 }
 
+.cta-button:hover {
+    background-color: #003e8a;
+    color: #ffc107;
+}
+
+/* ===============================Acvtivition Section============================= */
 .activities-section {
     padding: 50px 0;
     text-align: center;
@@ -319,7 +396,7 @@ body {
     justify-content: space-between;
     gap: 15px;
     margin-bottom: 20px;
-    height: 210px; /* Ukuran tetap untuk semua card */
+    height: 250px; /* Ukuran tetap untuk semua card */
 }
 .activity-card img {
     width: 150px;
@@ -346,12 +423,87 @@ body {
     margin: 0;
 }
 
+@media (max-width: 992px) {
+    .activities-section h5 {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .activities-section p li {
+        font-size: 10px;
+    }
+
+    .activity-card {
+        height: 200px; /* Ukuran tetap untuk semua card */
+    }
+    .activity-card img {
+        width: 100px;
+        height: auto;
+    }
+}
+
+@media (max-width: 475px) {
+    .activity-card {
+        height: auto; /* Ukuran tetap untuk semua card */
+    }
+    .activity-card img {
+        width: 100px;
+        height: auto;
+    }
+}
+
+
+/* ========================================News Section============================== */
+
+.main-news .text-white {
+    margin-bottom: 30px;
+}
+
+.news-card h4 {
+    font-size: calc(1.275rem + .3vw);
+    justify-content: space-between;
+}
+
+
+@media (min-width:760px) and (max-width:990px) {
+
+    .news-card h4 {
+        font-size: 14px;
+    }
+
+    .news-card img {
+        width : 250px;
+        text-align: center;
+        margin: 0 auto;
+        transform: translateX(30px);
+    }
+
+    .news-card .swiper-button-next:after, .swiper-button-prev:after {
+        font-size: 24px;
+    }
+
+    .news-card .swiper-button-prev:after, .swiper-button-next:after {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 759px) {
+    .main-news .text-white {
+        margin-bottom: 5px;
+        font-size: 10px;
+        padding: 5px;
+    }
+
+}
+
+
 .modal-content {
     border-radius: 15px;
     padding: 20px;
     text-align: center;
     width: 80%;
     font-family: 'Rubik';
+    margin: 0 auto;
 }
 
 .modal-header {
@@ -475,7 +627,7 @@ body {
 /* =================================DAFTAR LAPANGAN=============================== */
 
 .hero-section {
-    background: url('../banner-image.png') no-repeat center center/cover;
+    background: url('../img/banner-image.png') no-repeat center center/cover;
     padding: 30px 20px;
     display: flex;
     align-items: center;
@@ -490,19 +642,26 @@ body {
     text-align: center;
     padding: 0 50px;
 }
+
+.hero-section .hero-img  img{
+    width: 350px;
+}
+
 .hero-section .hero-text .terra {
     color: #00418C;
-    font-weight: bold;
+    font-weight: 800;
+    font-size: 60px;
 }
 .hero-section .hero-text .x {
     color: rgba(255, 243, 243, 0.08);
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: #FFBF00;
-    font-size: 48px;
+    font-size: 70px;
 }
 .hero-section h2 {
     color: #000000;
     font-weight: 400;
+    font-size: 22px;
 }
 .hero-section span {
     color: #ffc107;
@@ -510,7 +669,7 @@ body {
 .search-venue-section {
     padding: 20px;
     width: 90%;
-    margin: 0 auto;
+    margin: 90px auto;
 }
 .search-venue-section .search-form {
     display: flex;
@@ -535,6 +694,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 0px;
+    height: 500px;
 }
 .search-venue-section .venue-item .details{
     border-radius: 10px;
@@ -549,8 +709,13 @@ body {
 .search-venue-section .venue-item .details h5{
     font-weight: 700;
 }
+.search-venue-section .venue-item .details p{
+    font-size: 12px;
+}
+strong {
+    color: #003f88 !important;
+}
 .search-venue-section .venue-item .vanue-img {
-    height: 200px;
     width: 400px;
     object-fit: cover;
     border-radius: 10px 10px 0 0;
@@ -562,6 +727,106 @@ body {
 }
 .search-venue-section .pagination-container .page-item .page-link {
     border-radius: 5px;
+}
+
+/* Pagination container */
+.custom-pagination .page-item {
+    margin: 0 5px;
+}
+
+.custom-pagination .page-link {
+    border-radius: 50% !important;
+    min-width: 40px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0;
+    text-align: center;
+    background-color: #003f88;
+    color: #fff;
+    border: none;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+/* Hover effect */
+.custom-pagination .page-link:hover {
+    background-color: #ffc107;
+    color: #fff;
+}
+
+/* Aktif sama seperti hover */
+.custom-pagination .page-item.active .page-link {
+    background-color: #ffc107;
+    color: #fff;
+    font-weight: bold;
+}
+
+
+
+@media (min-width:769px) and (max-width: 1150px) {
+    strong {
+        font-size: 12px;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .hero-section {
+        display: block;
+        text-align: center;
+    }
+
+    .hero-section .hero-text {
+        padding: 0 5px;
+    }
+
+    .search-venue-section .search-form {
+        display: block;
+    }
+
+    .search-venue-section .form-control {
+        border-radius: 10px;
+        height: 45px;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    .search-venue-section .vanue {
+        width: 100%;
+    }
+
+    .hero-section .hero-img  img{
+        width: 250px;
+    }
+    .search-venue-section .venue-item .vanue-img {
+        height: auto;
+    }
+    .search-venue-section .venue-item .details .jenis{
+        font-size: 10px;
+    }
+    .search-venue-section .venue-item .details h5{
+        font-size: 14px;
+    }
+
+    .search-venue-section .venue-item .details p{
+        font-size: 12px;
+    }
+
+    .search-venue-section .venue-item .details .btn-primary {
+        font-size: 10px;
+        width: 100%;
+    }
+
+    .search-venue-section {
+        padding: 10px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .search-venue-section .btn-primary {
+        border-radius: 10px;
+        width: 100%;
+    }
 }
 
 .title-page {
@@ -577,7 +842,10 @@ body {
 .title-page p {
     margin: 0;
 }
+/* =======================================Vanue Daftar=========================== */
 
+
+/* ====================================Vanue Detail============================ */
 .banner-field .left-1 img{
     max-width: 100%;
     width: 1000px;
@@ -1082,7 +1350,7 @@ body {
 .social-btn.fb { background-color: #3b5998; }
 .social-btn.wa { background-color: #25D366; }
 .social-btn.tg { background-color: #0088cc; }
-.social-btn.x { background-color: #000; }
+.social-btn.x { background-color: #ffffff; border: 1px solid #000000; }
 .social-btn.link { background-color: #6c757d; }
 .social-btn:hover { opacity: 0.8; }
 
@@ -1117,5 +1385,46 @@ body {
 .social-btn:hover {
     color: #007bff;
 }
+
+.footer-sparx {
+    background: linear-gradient(to bottom, #0070d8, #003e8a);
+    font-family: 'Rubik', sans-serif;
+}
+
+.footer-link {
+    color: white;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 8px;
+    transition: 0.3s;
+}
+
+.footer-link:hover {
+    color: #ffcc00;
+    text-decoration: underline;
+}
+
+.container-footer {
+    width : 80%;
+    margin : 0 auto;
+}
+
+.footer-sparx .social-media {
+    margin: 0 auto;
+    justify-content: start;
+}
+
+.footer-sparx .social-media img {
+    width : 30px;
+    margin : 0 12px 10px 0;
+}
+
+@media (max-width:770px) {
+    .footer-sparx .social-media {
+        padding: 10px;
+        justify-content: center;
+    }
+}
+
 
 

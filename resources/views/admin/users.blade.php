@@ -1,63 +1,59 @@
-<x-layout bodyClass="g-sidenav-show bg-gray-200">
-    <x-navbars.sidebar activePage="users"></x-navbars.sidebar>
+@extends('vendor.layout.master')
 
-    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-        <x-navbars.navs.auth titlePage="User Management"></x-navbars.navs.auth>
+@push('plugin-styles')
+    <link rel="stylesheet" href="{{ asset('admin/assets/plugins/plugin.css') }}">
+@endpush
 
-        <div class="container-fluid py-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card mb-4">
-                        <div class="card-header pb-0">
-                            <h6>Users Table</h6>
-                        </div>
-                        <div class="card-body px-0 pt-0 pb-2">
-                            <div class="table-responsive p-0">
-                                <table class="table align-items-center mb-0">
-                                    <thead>
+@section('content')
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-header pb-0 bg-primary text-white">
+                    <h6 class="mb-0">Users Table</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-3">
+                        <table class="table table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th style="width: 5%">No</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Roles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($users as $index => $user)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>
+                                            @foreach ($user->roles as $role)
+                                                {{ $role->name_roles }}@if (!$loop->last)
+                                                    ,
+                                                @endif
+                                            @endforeach
+                                        </td>
+                                    </tr>
+                                    @empty
                                         <tr>
-                                            <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Name</th>
-                                            <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Email</th>
-                                            <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Roles</th>
+                                            <td colspan="4" class="text-center text-muted">No users found.</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($users as $user)
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex px-2 py-1">
-                                                        <div class="d-flex flex-column justify-content-center">
-                                                            <h6 class="mb-0 text-sm">{{ $user->name }}</h6>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <p class="text-xs font-weight-bold mb-0">{{ $user->email }}</p>
-                                                </td>
-                                                <td>
-                                                    <span class="text-secondary text-xs font-weight-bold">
-                                                        @foreach ($user->roles as $role)
-                                                            {{ $role->name_roles }}@if (!$loop->last)
-                                                                ,
-                                                            @endif
-                                                        @endforeach
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
-</x-layout>
+    @endsection
+
+    @push('plugin-scripts')
+        <script src="{{ asset('admin/assets/plugins/plugin.js') }}"></script>
+    @endpush
+
+    @push('custom-scripts')
+        {{-- Tambahkan custom script jika perlu --}}
+    @endpush

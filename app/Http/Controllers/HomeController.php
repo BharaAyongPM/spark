@@ -3,23 +3,86 @@
 namespace App\Http\Controllers;
 
 use App\Models\Field;
+use App\Models\FieldType;
+use App\Models\Location;
 use App\Models\OrderItem;
 use App\Models\Pricing;
+use App\Models\UserPreference;
+use App\Models\UserSource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $fields = Field::all();
-        return view('home.index', compact('fields'));
+        $query = Field::query();
+
+        // Filter berdasarkan aktivitas (Field Type)
+        if ($request->filled('field_type_id')) {
+            $query->where('field_type_id', $request->field_type_id);
+        }
+
+        // Filter berdasarkan lokasi
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        // Filter berdasarkan tanggal (jika diperlukan logic lanjutan bisa ditambahkan)
+        if ($request->filled('date')) {
+            // Logika pengecekan slot tersedia bisa ditambahkan di sini jika ada
+        }
+
+        $fields = $query->get();
+        $fieldTypes = FieldType::all();
+        $locations = Location::all();
+
+        // ✅ Tambahkan ini untuk user login
+        $hasSource = false;
+        $hasPreference = false;
+
+        if (Auth::check()) {
+            $userId = auth()->id();
+            $hasSource = UserSource::where('user_id', $userId)->exists();
+            $hasPreference = UserPreference::where('user_id', $userId)->exists();
+        }
+
+        return view('home.index', compact(
+            'fields',
+            'fieldTypes',
+            'locations',
+            'hasSource',
+            'hasPreference'
+        ));
     }
-    public function indexfield()
+    public function indexfield(Request $request)
     {
-        $fields = Field::all();
-        return view('home.indexfield', compact('fields'));
+        $query = Field::query();
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+        // Filter berdasarkan aktivitas
+        if ($request->filled('field_type_id')) {
+            $query->where('field_type_id', $request->field_type_id);
+        }
+
+        // Filter berdasarkan lokasi
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        // (Opsional) Filter tanggal bisa disesuaikan jika kamu punya data booking/schedule
+        if ($request->filled('date')) {
+            // Misalnya nanti mau tambahkan logika validasi tanggal tersedia
+        }
+
+        $fields = $query->get();
+        $fieldTypes = FieldType::all();
+        $locations = Location::all();
+
+        return view('home.indexfield', compact('fields', 'fieldTypes', 'locations'));
     }
 
     /**

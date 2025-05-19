@@ -119,6 +119,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('vendor.wasitphoto.index') }}">
+                        <i class="mdi mdi-account-multiple"></i>
+                        <span class="menu-title">Wasit & Fotografer</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white {{ $activePage == 'absensiemas' ? ' active bg-gradient-success' : '' }} "
                         href="{{ route('vendor.indexvendor') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">

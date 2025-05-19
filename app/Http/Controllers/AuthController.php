@@ -6,6 +6,8 @@ use App\Mail\OtpMail;
 use App\Models\OtpCode;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserPreference;
+use App\Models\UserSource;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -174,5 +176,77 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    }
+
+    public function checkSourceAndPreferences()
+    {
+        $user = auth()->user();
+
+        // Cek apakah user sudah punya sumber dan preferensi
+        $hasSource = UserSource::where('user_id', $user->id)->exists();
+        $hasPreferences = UserPreference::where('user_id', $user->id)->exists();
+
+        // Jika salah satu belum ada, arahkan ke form preferensi
+        if (!($hasSource && $hasPreferences)) {
+            return view('user.preferences-form');
+        }
+
+        // Kalau sudah lengkap, arahkan ke dashboard user
+        return redirect()->intended('/');
+    }
+
+
+    public function saveSourceAndPreferences(Request $request)
+    {
+        $request->validate([
+            'source_info' => 'required|string|max:255',
+            'sports' => 'required|array|min:1'
+        ]);
+
+        $userId = auth()->id();
+
+        // Simpan sumber info
+        UserSource::updateOrCreate(
+            ['user_id' => $userId],
+            ['source' => $request->source_info]
+        );
+
+        // Simpan preferensi
+        UserPreference::where('user_id', $userId)->delete();
+        foreach ($request->sports as $sport) {
+            UserPreference::create([
+                'user_id' => $userId,
+                'sport' => $sport
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+    public function showprofil()
+    {
+        $user = auth()->user();
+        return view('home.profile', compact('user'));
+    }
+
+    public function update(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'avatar' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
+        }
+
+        $user->name = $request->name;
+        $user->phone = $request->phone;
+        $user->save();
+
+        return back()->with('success', 'Profil berhasil diperbarui!');
     }
 }

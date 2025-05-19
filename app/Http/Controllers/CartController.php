@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Discount;
 use App\Models\Field;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Setting;
+use App\Models\WasitPhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -121,6 +123,7 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
+
         $cart = session()->get('cart', []); // Ambil data dari sesi
         $orderHistory = []; // Untuk menyimpan histori pesanan
 
@@ -153,21 +156,118 @@ class CartController extends Controller
             }
         }
         // 🔥 Simpan orderHistory ke session sebagai cart
-        // session()->put('cart', $orderHistory);
-        // $mergedCart = array_merge($cart, $orderHistory);
-        // session()->put('cart', $mergedCart);
+
         // Hitung total harga dari sesi keranjang dan histori pesanan
         $totalSewaCart = !empty($cart) ? array_sum(array_column($cart, 'price')) : 0;
         $totalSewaHistory = !empty($orderHistory) ? array_sum(array_column($orderHistory, 'price')) : 0;
+        $kodeDiskon = $request->query('kode_diskon');
+        $appliedDiscount = null;
+        $discountAmount = 0;
 
         // Ambil biaya tambahan dari settings
         $settings = Setting::first();
         $feeService = $settings->fee_service ?? 0;
         $feeXendit = $settings->fee_xendit ?? 0;
 
-        // Hitung total keseluruhan
+        // Hitung total awal (belum diskon)
         $total = $totalSewaCart + $totalSewaHistory + $feeService + $feeXendit;
 
-        return view('home.checkout', compact('cart', 'orderHistory', 'totalSewaCart', 'totalSewaHistory', 'feeService', 'feeXendit', 'total'));
+        // Tambahkan biaya addon
+        $selectedAddons = session('selected_addons', []);
+        $addonTotal = collect($selectedAddons)->sum('harga');
+        $total += $addonTotal;
+
+        // Hitung diskon
+        $kodeDiskon = $request->query('kode_diskon');
+        $appliedDiscount = null;
+        $discountAmount = 0;
+
+        if ($request->has('kode_diskon')) {
+            $kode = $request->kode_diskon;
+            $diskon = Discount::where('code', $kode)
+                ->where('status', true)
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->first();
+
+            if ($diskon) {
+                $appliedDiscount = $diskon;
+
+                $eligibleAmount = ($diskon->scope === 'all' || $diskon->field_id === null)
+                    ? $totalSewaCart + $totalSewaHistory
+                    : collect(array_merge($cart, $orderHistory))
+                    ->filter(fn($item) => $item['field_id'] == $diskon->field_id)
+                    ->sum('price');
+
+                if ($eligibleAmount >= ($diskon->min_order_total ?? 0)) {
+                    $discountAmount = $eligibleAmount * ($diskon->percentage / 100);
+                    if ($diskon->max_discount) {
+                        $discountAmount = min($discountAmount, $diskon->max_discount);
+                    }
+                    $total -= $discountAmount;
+
+                    // ✅ Simpan ke session hanya jika diskon valid
+                    session()->put('applied_discount', [
+                        'id' => $diskon->id,
+                        'code' => $diskon->code,
+                        'percentage' => $diskon->percentage,
+                        'amount' => $discountAmount,
+                    ]);
+
+                    session()->flash('success', 'Selamat Anda berhasil mendapatkan diskon!');
+                } else {
+                    $discountAmount = 0;
+                    session()->forget('applied_discount');
+                    session()->flash('error', 'Maaf kode invalid (minimum total belum tercapai).');
+                }
+            } else {
+                session()->forget('applied_discount');
+                session()->flash('error', 'Maaf kode invalid (melebihi batas) atau sudah kadaluarsa.');
+            }
+        }
+
+
+
+        // Kumpulkan data wasit/fotografer
+        $wasitPhotoData = [];
+        foreach (array_merge($cart, $orderHistory) as $item) {
+            $fieldId = $item['field_id'];
+            $addons = \App\Models\WasitPhoto::where('field_id', $fieldId)->get();
+            if ($addons->count()) {
+                $wasitPhotoData[$fieldId] = $addons;
+            }
+        }
+
+        return view('home.checkout', compact(
+            'cart',
+            'orderHistory',
+            'totalSewaCart',
+            'totalSewaHistory',
+            'feeService',
+            'feeXendit',
+            'total',
+            'wasitPhotoData',
+            'selectedAddons',
+            'addonTotal',
+            'appliedDiscount',
+            'discountAmount'
+        ));
+    }
+    public function checkoutAddons(Request $request)
+    {
+        $addonIds = $request->addons ?? [];
+        $addons = WasitPhoto::whereIn('id', $addonIds)->get()->map(function ($a) use ($request) {
+            return [
+                'id' => $a->id,
+                'nama' => $a->nama,
+                'jenis' => $a->jenis,
+                'harga' => $a->harga,
+                'field_id' => $request->field_id // tambahkan field_id
+            ];
+        });
+
+        session(['selected_addons' => $addons]);
+
+        return redirect()->route('checkout')->with('success', 'Add-on berhasil ditambahkan');
     }
 }

@@ -10,38 +10,95 @@
     </section>
 
     <section class="banner-field">
-        <div class="container">
+        <div class="container d-none d-md-block">
             <div class="row">
                 <div class="col-md-8 left-1">
-                    <img src="{{ asset('assets/img/Rectangle 217.png') }}" alt="" id="banner-img">
+                    @if ($field->gallery && count(json_decode($field->gallery)) > 0)
+                        <img src="{{ asset('storage/' . json_decode($field->gallery)[0]) }}" alt="Galeri Utama"
+                            id="banner-img">
+                    @else
+                        <img src="{{ asset('assets/img/Rectangle 217.png') }}" alt="Default" id="banner-img">
+                    @endif
                 </div>
                 <div class="col-md-4 right-2">
-                    <div>
-                        <img src="{{ asset('assets/img/stadion-2.png') }}" alt="">
-                    </div>
-                    <div>
-                        <img src="{{ asset('assets/img/stadion-3.png') }}" alt="">
-                    </div>
-
+                    @foreach (json_decode($field->gallery, true) as $index => $gallery)
+                        @if ($index > 0 && $index <= 2)
+                            <div class="mb-2">
+                                <img src="{{ asset('storage/' . $gallery) }}" alt="Galeri {{ $index + 1 }}"
+                                    class="img-fluid rounded">
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
             </div>
-        </div>
+
+            <!-- Swiper untuk mobile -->
+            <div class="container d-block d-md-none">
+                <div class="swiper bannerSwiper">
+                    <div class="swiper-wrapper">
+                        @if ($field->gallery)
+                            @foreach (json_decode($field->gallery, true) as $index => $gallery)
+                                @if ($index >= 0)
+                                    {{-- Tampilkan semua atau bisa batasi misal max 3 --}}
+                                    <div class="swiper-slide">
+                                        <img src="{{ asset('storage/' . $gallery) }}" class="img-fluid rounded"
+                                            alt="Galeri {{ $index + 1 }}">
+                                    </div>
+                                @endif
+                            @endforeach
+                        @else
+                            {{-- Kalau tidak ada galeri --}}
+                            <div class="swiper-slide">
+                                <img src="{{ asset('assets/img/no-image.png') }}" class="img-fluid rounded" alt="No Image">
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Optional pagination -->
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+
     </section>
 
-    <!-- Modal QR (gunakan Bootstrap modal agar konsisten) -->
+
+    <!-- Modal QR -->
     <div class="modal fade" id="qr-modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-center">
-                <div class="modal-header">
-                    <h5 class="modal-title">QR Code</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content text-center position-relative p-4">
+
+                <!-- Tombol Close di pojok kanan -->
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+
+                <!-- Judul -->
+                <div class="modal-header border-0 d-block">
+                    <h5 class="modal-title text-muted mt-4 mb-4" style="font-weight: 500;">Pindai untuk membagikan</h5>
                 </div>
+
+                <!-- QR Code -->
                 <div class="modal-body">
                     <canvas id="qrcode"></canvas>
+
+                    <!-- Garis HR -->
+                    <hr style="width: 90%; margin: 20px auto;">
+
+                    <!-- Teks "atau" -->
+                    <p class="text-muted mb-3" style="font-size: 14px;">atau</p>
+
+                    <!-- Media Sosial -->
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-primary" style="font-size: 24px;"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-info" style="font-size: 24px;"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-danger" style="font-size: 24px;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-success" style="font-size: 24px;"><i class="fab fa-whatsapp"></i></a>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
+
 
     <!-- Popup Share -->
     <div id="popup-share" class="share-popup">
@@ -78,13 +135,13 @@
                     <hr>
                     <div class="deskripsi">
                         <p>
-                            <b style="font-size: 14px;">Deskripsi</b>
+                            <b style="font-size: 16px;">Deskripsi</b>
                             <br>
                             {{ $field->deskripsi }}
                         </p>
                         <br>
                         <p>
-                            <b style="font-size: 14px;">Aturan Vanue</b>
+                            <b style="font-size: 16px;">Aturan Vanue</b>
                         <ol>
                             {{ $field->syarat_ketentuan }}
                         </ol>
@@ -92,17 +149,26 @@
                         <div class="map-container position-relative">
                             <div id="map" style="width: 100%; height: 3000px; border-radius: 10px;"></div>
                             <div class="map-overlay"></div>
-                            <a href="https://www.google.com/maps?q={{ $field->lat }},{{ $field->lon }}" target="_blank"
-                                class="map-button">Lihat Map →</a>
+                            <a href="https://www.google.com/maps?q={{ $field->lat }},{{ $field->lon }}"
+                                target="_blank" class="map-button">Lihat Map →</a>
                         </div>
                         <hr>
                         <!-- Bagian Fasilitas -->
                         <div class="fasilitas-container mb-4">
-                            <b style="font-size: 14px;">Fasilitas</b>
-                            <div class="fasilitas-list">
+                            <b style="font-size: 16px;">Fasilitas</b>
+                            <div class="fasilitas-list mt-2">
                                 @forelse ($faciliti->facilities as $facility)
-                                    <div class="fasilitas-item">
-                                        <i class="{{ $facility->icon }}"></i>
+                                    <div class="fasilitas-item d-flex align-items-center mb-2">
+                                        @php
+                                            // Tentukan icon berdasarkan nama fasilitas
+                                            $icons = [
+                                                'Toilet' => 'fas fa-restroom',
+                                                'Kantin' => 'fas fa-utensils',
+                                                'Ruang Ganti Pemain' => 'fas fa-tshirt',
+                                            ];
+                                            $iconClass = $icons[$facility->name] ?? 'fas fa-check-circle'; // default icon
+                                        @endphp
+                                        <i class="{{ $iconClass }} me-2"></i>
                                         <span>{{ $facility->name }}</span>
                                     </div>
                                 @empty
@@ -110,7 +176,6 @@
                                 @endforelse
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -124,6 +189,7 @@
                     </div>
                     {{-- //modal  --}}
                     <!-- Modal Filter Tanggal -->
+                    <!-- Modal Tanggal -->
                     <div class="modal fade" id="dateFilterModal" tabindex="-1" aria-labelledby="dateFilterModalLabel"
                         aria-hidden="true">
                         <div class="modal-dialog">
@@ -135,35 +201,42 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="start_date" class="form-label">Tanggal Awal</label>
+                                        <label for="start_date" class="form-label">Dari</label>
                                         <input type="date" class="form-control" id="start_date" name="start_date"
                                             required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="end_date" class="form-label">Tanggal Akhir</label>
+                                        <label for="end_date" class="form-label">Sampai</label>
                                         <input type="date" class="form-control" id="end_date" name="end_date"
                                             required>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Tampilkan Jadwal</button>
+                                    <button type="submit" class="btn btn-primary w-100">Tampilkan Jadwal</button>
                                 </div>
                             </form>
                         </div>
                     </div>
 
 
-                    <!-- Pemilihan Tanggal -->
+                    <!-- Form Filter Tanggal -->
                     <form method="GET" action="{{ route('home.field', $field->id) }}">
-                        <div class="d-flex gap-2 mb-3">
-                            <input type="date" name="start_date" class="form-control"
-                                value="{{ request('start_date') }}">
-                            <input type="date" name="end_date" class="form-control"
-                                value="{{ request('end_date') }}">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                        <div class="row g-2 mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Dari</label>
+                                <input type="date" name="start_date" class="form-control"
+                                    value="{{ request('start_date') }}">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Sampai</label>
+                                <input type="date" name="end_date" class="form-control"
+                                    value="{{ request('end_date') }}">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary w-100">Filter</button>
+                            </div>
                         </div>
                     </form>
-
 
                 </div>
                 <hr>
@@ -183,21 +256,21 @@
                             Sepak Bola
                         </div>
                         <!-- Slot Booking -->
-                        <div class="slots-container">
-                            @if (!empty($schedules))
-                                @foreach ($schedules as $date => $slots)
-                                    <div class="mb-3">
-                                        <div class="date text-center">
-                                            <strong>{{ \Carbon\Carbon::parse($date)->format('d M') }}</strong> <br>
+                        <div class="row row-cols-3 row-cols-lg-5 g-3"> {{-- Responsive grid: 3 cols mobile, 5 cols desktop --}}
+                            @foreach ($schedules as $date => $slots)
+                                <div class="col">
+                                    <div class="mb-3 border p-2 rounded shadow-sm bg-white">
+                                        <div class="date text-center mb-2">
+                                            <strong>{{ \Carbon\Carbon::parse($date)->format('d M') }}</strong><br>
                                             {{ \Carbon\Carbon::parse($date)->format('l') }}
                                         </div>
 
                                         @foreach ($slots as $slot)
                                             <div class="slot slot-item
-                                                {{ $slot['status'] === 'available' ? 'bg-light' : '' }}
-                                                {{ $slot['status'] === 'unavailable' ? 'bg-secondary text-white' : '' }}
-                                                {{ $slot['status'] === 'booked' ? 'bg-danger text-white fw-bold' : '' }}
-                                                {{ $slot['status'] === 'pending' ? 'bg-warning text-dark fw-bold' : '' }}"
+                        {{ $slot['status'] === 'available' ? 'bg-light' : '' }}
+                        {{ $slot['status'] === 'unavailable' ? 'bg-secondary text-white' : '' }}
+                        {{ $slot['status'] === 'booked' ? 'bg-danger text-white fw-bold' : '' }}
+                        {{ $slot['status'] === 'pending' ? 'bg-warning text-dark fw-bold' : '' }}"
                                                 style="cursor: {{ $slot['status'] === 'available' ? 'pointer' : 'not-allowed' }};"
                                                 data-field-id="{{ $field->id }}" data-date="{{ $date }}"
                                                 data-time-slot="{{ $slot['time'] }}" data-price="{{ $slot['price'] }}"
@@ -219,11 +292,10 @@
                                             </div>
                                         @endforeach
                                     </div>
-                                @endforeach
-                            @else
-                                <p class="text-center text-muted">Jadwal belum tersedia.</p>
-                            @endif
+                                </div>
+                            @endforeach
                         </div>
+
                     </div>
                 </div>
 

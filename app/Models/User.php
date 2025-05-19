@@ -20,7 +20,8 @@ class User extends Authenticatable
         'provider',
         'provider_id',
         'avatar_url',
-        'is_active'
+        'is_active',
+        'avatar',
     ];
 
     protected $hidden = [
@@ -32,7 +33,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
     }
-
+    public function sourceInfo()
+    {
+        return $this->hasOne(UserSource::class);
+    }
+    public function preferences()
+    {
+        return $this->hasMany(UserPreference::class);
+    }
 
     public function carts()
     {
@@ -57,5 +65,19 @@ class User extends Authenticatable
     public function activityLogs()
     {
         return $this->hasMany(ActivityLog::class);
+    }
+    public function getSaldoSiapTarikAttribute()
+    {
+        // Hitung total pendapatan
+        $totalPendapatan = \App\Models\Order::whereHas('orderItems.field', function ($q) {
+            $q->where('user_id', $this->id);
+        })->where('status', 'completed')->sum('total_price'); // sesuaikan kolom
+
+        // Hitung withdraw
+        $totalWithdrawn = \App\Models\Withdraw::where('user_id', $this->id)
+            ->whereIn('status', ['approved', 'completed'])
+            ->sum('amount');
+
+        return $totalPendapatan - $totalWithdrawn;
     }
 }

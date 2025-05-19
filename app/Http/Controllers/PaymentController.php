@@ -24,130 +24,95 @@ class PaymentController extends Controller
     {
         Log::info("🔵 Memulai proses checkout...");
 
-        // 🛒 **Validasi keranjang**
         $cart = session('cart', []);
         Log::info("🛒 Isi Cart: ", $cart);
+
         if (empty($cart)) {
             return redirect()->back()->with('error', 'Keranjang kosong.');
         }
 
-        // 💰 **Ambil fee dari settings**
         $settings = Setting::first();
-        $feeService = $settings->fee_service ?? 0;  // Jika tidak ada, default 0
-        $feeXendit = $settings->fee_xendit ?? 0;    // Jika tidak ada, default 0
+        $feeService = $settings->fee_service ?? 0;
+        $feeXendit  = $settings->fee_xendit ?? 0;
 
-        // 💰 **Hitung total harga dari keranjang**
-        $totalLapangan = array_sum(array_column($cart, 'price'));
-        Log::info("✅ Total harga lapangan: Rp " . number_format($totalLapangan, 0, ',', '.'));
+        $totalLapangan   = array_sum(array_column($cart, 'price'));
+        $selectedAddons  = session('selected_addons', []);
+        $totalAddon      = collect($selectedAddons)->sum('harga');
+        $appliedDiscount = session('applied_discount');
+        $discountAmount  = $appliedDiscount['amount'] ?? 0;
 
-        // 🔢 **Total harga akhir = Harga lapangan + Fee Service + Fee Xendit**
-        $totalPrice = $totalLapangan + $feeService + $feeXendit;
-        Log::info("✅ Total harga setelah fee: Rp " . number_format($totalPrice, 0, ',', '.'));
+        $totalPrice = $totalLapangan + $totalAddon + $feeService + $feeXendit - $discountAmount;
+
+        Log::info("💵 Total Lapangan: Rp " . number_format($totalLapangan, 0, ',', '.'));
+        Log::info("➕ Addon: Rp " . number_format($totalAddon, 0, ',', '.'));
+        Log::info("➖ Diskon: Rp " . number_format($discountAmount, 0, ',', '.'));
+        Log::info("✅ Total Final: Rp " . number_format($totalPrice, 0, ',', '.'));
 
         try {
-            // **Pastikan invoice_number unik**
             $invoiceNumber = 'INV-' . strtoupper(uniqid());
 
-            if (empty($invoiceNumber)) {
-                Log::error("❌ Invoice Number tidak terbentuk dengan benar.");
-                return redirect()->back()->with('error', 'Terjadi kesalahan pada invoice.');
-            }
-            Log::info("📌 Due Date: " . now()->addHours(1));
-
-            // 🛒 **Buat Order di database**
             $order = Order::create([
-                'user_id' => Auth::id(),
-                'total_price' => (int) $totalPrice,
-                'status' => 'pending',
-                'payment_status' => 'pending',
-                'invoice_number' => $invoiceNumber,
-                'due_date' => now()->addHours(1),
+                'user_id'         => Auth::id(),
+                'total_price'     => (int) $totalPrice,
+                'status'          => 'pending',
+                'payment_status'  => 'pending',
+                'invoice_number'  => $invoiceNumber,
+                'addon_price'     => $totalAddon,
+                'discount_amount' => $discountAmount,
+                'due_date'        => now()->addHours(1),
             ]);
 
-            if (!$order) {
-                Log::error("❌ Order gagal disimpan ke database.");
-                return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan pesanan.');
-            }
-
-            Log::info("✅ Order berhasil dibuat:", $order->toArray());
-
-            // 🛒 **Simpan Order Items**
             foreach ($cart as $item) {
-                // **Pecah `time_slot` menjadi `slot_start` dan `slot_end`**
                 $timeSlots = explode('-', $item['time_slot']);
-                $slotStart = trim($timeSlots[0]);  // Ambil jam mulai
-                $slotEnd = trim($timeSlots[1]);    // Ambil jam selesai
-
-                // Gabungkan dengan tanggal agar sesuai dengan format DATETIME
-                $slotStartDateTime = $item['date'] . ' ' . $slotStart . ':00'; // Format: YYYY-MM-DD HH:MM:SS
-                $slotEndDateTime = $item['date'] . ' ' . $slotEnd . ':00'; // Format: YYYY-MM-DD HH:MM:SS
+                $slotStartDateTime = $item['date'] . ' ' . trim($timeSlots[0]) . ':00';
+                $slotEndDateTime   = $item['date'] . ' ' . trim($timeSlots[1]) . ':00';
 
                 OrderItem::create([
                     'order_id'   => $order->id,
                     'field_id'   => $item['field_id'],
-                    'slot_start' => $slotStartDateTime,  // Format DATETIME
-                    'slot_end'   => $slotEndDateTime,    // Format DATETIME
+                    'slot_start' => $slotStartDateTime,
+                    'slot_end'   => $slotEndDateTime,
                     'price'      => (int) $item['price'],
                 ]);
             }
 
-
-
-            Log::info("✅ Semua item berhasil disimpan ke tabel order_items.");
-
-            // **Hapus cart setelah order dibuat**
-            session()->forget('cart');
-
-            // 🛠 **Set API Key Xendit**
+            // ✅ Gunakan API Key langsung, bukan dari .env
             $apiKey = 'xnd_development_eJLTLkdkNY2HDlEiNwd84gcU1u7J2ELCkr3kflcJ4JnMa7SLRYPY2QZoTp6xf6c';
-            if (!$apiKey) {
-                Log::error("❌ XENDIT_SECRET_KEY tidak ditemukan di .env!");
-                return redirect()->back()->with('error', 'API Key tidak ditemukan.');
-            }
             \Xendit\Configuration::setXenditKey($apiKey);
-
-            // 🔄 **Buat instance Xendit Invoice API**
             $apiInstance = new \Xendit\Invoice\InvoiceApi();
 
-            // 📄 **Persiapkan data invoice**
             $create_invoice_request = new \Xendit\Invoice\CreateInvoiceRequest([
-                'external_id' => $order->invoice_number,
-                'payer_email' => Auth::user()->email ?? 'guest@example.com',
-                'description' => 'Pembayaran untuk Order ' . $order->invoice_number,
-                'amount' => (int) $totalPrice,
-                'invoice_duration' => 3600,
-                'currency' => 'IDR',
-                'reminder_time' => 30,
-                'success_redirect_url' => route('payment.success', ['invoice' => $order->invoice_number]),
-
-                'failure_redirect_url' => route('payment.failure'),
+                'external_id'           => $order->invoice_number,
+                'payer_email'           => Auth::user()->email ?? 'guest@example.com',
+                'description'           => 'Pembayaran untuk Order ' . $order->invoice_number,
+                'amount'                => (int) $totalPrice,
+                'invoice_duration'      => 3600,
+                'currency'              => 'IDR',
+                'reminder_time'         => 30,
+                'success_redirect_url'  => route('payment.success', ['invoice' => $order->invoice_number]),
+                'failure_redirect_url'  => route('payment.failure'),
             ]);
 
-            // **Log request sebelum dikirim ke Xendit**
-            Log::info("📡 Mengirim request ke Xendit:", json_decode(json_encode($create_invoice_request), true));
-
-            // **Buat invoice di Xendit**
             $invoice = $apiInstance->createInvoice($create_invoice_request);
-            Log::info("✅ Invoice berhasil dibuat di Xendit:", (array) $invoice);
 
-            // **Simpan data pembayaran di database**
             Payment::create([
-                'order_id' => $order->id,
-                'payment_method' => 'xendit',
-                'amount' => $totalPrice,
-                'payment_status' => 'pending',
+                'order_id'          => $order->id,
+                'payment_method'    => 'xendit',
+                'amount'            => $totalPrice,
+                'payment_status'    => 'pending',
                 'xendit_payment_id' => $invoice->getId(),
             ]);
 
-            Log::info("✅ Data pembayaran berhasil disimpan.");
+            session()->forget(['cart', 'selected_addons', 'applied_discount']);
 
-            // **Redirect ke URL pembayaran Xendit**
             return redirect($invoice->getInvoiceUrl());
         } catch (\Xendit\XenditSdkException $e) {
-            Log::error("❌ Gagal membuat pembayaran: " . $e->getMessage(), ['error' => json_encode($e->getFullError())]);
+            Log::error("❌ Gagal membuat pembayaran: " . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal membuat pembayaran: ' . $e->getMessage());
         }
     }
+
+
 
     public function checkExpiredOrders()
     {

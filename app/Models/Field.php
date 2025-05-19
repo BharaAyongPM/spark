@@ -23,7 +23,7 @@ class Field extends Model
         'location_id',
         'lat',
         'lon',
-        'galery',
+        'gallery',
         'slot_tipe',
         'owner',
         'grass_quality',

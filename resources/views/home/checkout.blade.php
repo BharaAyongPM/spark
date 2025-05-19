@@ -191,9 +191,29 @@
             background: #003080;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#28a745'
+            });
+        </script>
+    @endif
 
-
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#d33'
+            });
+        </script>
+    @endif
 
     <div class="row">
         <!-- Kartu Pesanan -->
@@ -222,6 +242,23 @@
                             <span>Rp. {{ number_format($item['price'], 0, ',', '.') }}</span>
                         </div>
                         <div class="divider"></div>
+                        @if (isset($wasitPhotoData[$item['field_id']]))
+                            @php
+                                $selectedFieldAddons = collect($selectedAddons)->where('field_id', $item['field_id']);
+                                $alreadySelected = $selectedFieldAddons->isNotEmpty();
+                            @endphp
+
+                            @if ($alreadySelected)
+                                <div class="text-success small mb-2">✅ Add-on sudah ditambahkan</div>
+                                <button class="btn btn-sm btn-outline-warning mb-3" data-bs-toggle="modal"
+                                    data-bs-target="#addonModal-{{ $item['field_id'] }}">✏ Edit Add-on</button>
+                            @else
+                                <div class="text-muted small mb-2">Ingin menggunakan wasit/fotografer dari penyedia
+                                    lapangan?</div>
+                                <button class="btn btn-sm btn-outline-info mb-3" data-bs-toggle="modal"
+                                    data-bs-target="#addonModal-{{ $item['field_id'] }}">+ Tambahkan Add-on</button>
+                            @endif
+                        @endif
                     @empty
                         <p class="text-muted px-3">Tidak ada pesanan di keranjang.</p>
                     @endforelse
@@ -238,6 +275,23 @@
                             <span>Rp. {{ number_format($item['price'], 0, ',', '.') }}</span>
                         </div>
                         <div class="divider"></div>
+                        @if (isset($wasitPhotoData[$item['field_id']]))
+                            @php
+                                $selectedFieldAddons = collect($selectedAddons)->where('field_id', $item['field_id']);
+                                $alreadySelected = $selectedFieldAddons->isNotEmpty();
+                            @endphp
+
+                            @if ($alreadySelected)
+                                <div class="text-success small mb-2">✅ Add-on sudah ditambahkan</div>
+                                <button class="btn btn-sm btn-outline-warning mb-3" data-bs-toggle="modal"
+                                    data-bs-target="#addonModal-{{ $item['field_id'] }}">✏ Edit Add-on</button>
+                            @else
+                                <div class="text-muted small mb-2">Ingin menggunakan wasit/fotografer dari penyedia
+                                    lapangan?</div>
+                                <button class="btn btn-sm btn-outline-info mb-3" data-bs-toggle="modal"
+                                    data-bs-target="#addonModal-{{ $item['field_id'] }}">+ Tambahkan Add-on</button>
+                            @endif
+                        @endif
                     @empty
                         <p class="text-muted px-3">Tidak ada pesanan tertunda dari histori.</p>
                     @endforelse
@@ -249,11 +303,40 @@
                 </div>
             </div>
         </div>
-
+        @foreach ($wasitPhotoData as $fieldId => $addons)
+            <div class="modal fade" id="addonModal-{{ $fieldId }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form action="{{ route('checkout.addons') }}" method="POST" class="modal-content">
+                        @csrf
+                        <input type="hidden" name="field_id" value="{{ $fieldId }}">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Pilih Add-on</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            @foreach ($addons as $addon)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="addons[]"
+                                        value="{{ $addon->id }}"
+                                        {{ collect($selectedAddons)->pluck('id')->contains($addon->id) ? 'checked' : '' }}>
+                                    <label class="form-check-label">
+                                        {{ ucfirst($addon->jenis) }} - {{ $addon->nama }} (Rp
+                                        {{ number_format($addon->harga, 0, ',', '.') }})
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endforeach
         <div class="col-md-6">
             <div class="container-order">
                 <!-- Tombol Pilih Voucher -->
-                <button class="voucher-btn mb-3">
+                <button id="voucherBtn" class="voucher-btn mb-3">
                     <i class="fas fa-ticket"></i> Pilih Voucher
                 </button>
 
@@ -278,14 +361,36 @@
                         <span>Biaya Xendit </span>
                         <strong>Rp {{ number_format($feeXendit, 0, ',', '.') }}</strong>
                     </div>
+                    @if (!empty($selectedAddons))
+                        @php
+                            $wasitTotal = collect($selectedAddons)->where('jenis', 'wasit')->sum('harga');
+                            $photoTotal = collect($selectedAddons)->where('jenis', 'photo')->sum('harga');
+                        @endphp
+
+                        @if ($wasitTotal > 0)
+                            <div class="cost-row">
+                                <span>Biaya Wasit</span>
+                                <strong>Rp {{ number_format($wasitTotal, 0, ',', '.') }}</strong>
+                            </div>
+                        @endif
+
+                        @if ($photoTotal > 0)
+                            <div class="cost-row">
+                                <span>Biaya Fotografer</span>
+                                <strong>Rp {{ number_format($photoTotal, 0, ',', '.') }}</strong>
+                            </div>
+                        @endif
+                    @endif
                     <div class="cost-row border-top">
                         <span>Jumlah</span>
                         <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong>
                     </div>
-                    <div class="cost-row">
-                        <span>Diskon</span>
-                        <strong>Rp. 0</strong>
-                    </div>
+                    @if ($appliedDiscount)
+                        <div class="cost-row">
+                            <span>Diskon ({{ $appliedDiscount->code }})</span>
+                            <strong>- Rp {{ number_format($discountAmount, 0, ',', '.') }}</strong>
+                        </div>
+                    @endif
                     <div class="cost-row border-top">
                         <strong>Total</strong>
                         <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong>
@@ -303,5 +408,32 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
+    <script>
+        document.getElementById('voucherBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Masukkan Kode Voucher',
+                input: 'text',
+                inputPlaceholder: 'Contoh: DISKON50',
+                showCancelButton: true,
+                confirmButtonText: 'Gunakan',
+                cancelButtonText: 'Batal',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Kode tidak boleh kosong!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let kode = result.value.trim();
+                    if (kode) {
+                        // Redirect ke halaman checkout dengan kode_diskon
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('kode_diskon', kode);
+                        window.location.href = url.toString();
+                    }
+                }
+            });
+        });
+    </script>
 
 @endsection
